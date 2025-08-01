@@ -49,7 +49,7 @@ for epoch in range(1, EPOCHS + 1):
     total_loss = 0
     correct = 0
     for inputs, labels in train_loader:
-        inputs, labels = inputs.to(device), labels.to(device)
+        inputs, labels = inputs.to(device), labels.to(device) inputs.to(device), labels.to(device)
         optimizer.zero_grad()
         outputs = model(inputs)
         loss = criterion(outputs, labels)

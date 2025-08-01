@@ -6,7 +6,7 @@
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
 [![PyTorch](https://img.shields.io/badge/PyTorch-EE4C2C?logo=pytorch&logoColor=white)](https://pytorch.org/)
 
-> **Try it live!** Visit our [interactive demo](https://raselmandol.github.io/git-ml/) to test the trained model with your own handwritten digits!
+> **View training insights!** Visit the [live dashboard](https://raselmandol.github.io/git-ml/) to see real-time training metrics, model performance, and automated pipeline results.
 
 This repository provides a fully automated pipeline for training and testing a simple neural network on the MNIST dataset using PyTorch. All steps are orchestrated via GitHub Actions, so you get fresh results and logs every time you push or on a schedule.
 
@@ -15,7 +15,7 @@ This repository provides a fully automated pipeline for training and testing a s
 - **Rich Visualizations:** Training loss and accuracy graphs with sample prediction images
 - **Detailed Logs:** Beautiful markdown reports with embedded charts and images
 - **Model Persistence:** Trained model weights are saved and version-controlled
-- **Interactive Demo:** Test the model live on GitHub Pages
+- **Training Dashboard:** View training insights live on GitHub Pages
 - **Easy to Extend:** Simple, clean code structure for experimentation
 
 ## Project Structure
@@ -30,9 +30,9 @@ git-ml/
 ├── mnist_model.pt          # Trained model weights
 ├── images/                # Generated plots & sample images
 ├── docs/                   # GitHub Pages website
-│   ├── index.html            # Interactive demo page
+│   ├── index.html            # Training dashboard page
 │   ├── style.css             # Responsive styling
-│   └── script.js             # Model inference logic
+│   └── script.js             # Dashboard functionality
 └── .github/workflows/      # Automation workflows
     └── train_mnist.yml       # Training pipeline
     └── pages.yml
@@ -59,8 +59,8 @@ git-ml/
 
 ## Quick Start 
 
-### Option 1: Try the Live Demo
-Visit this [**interactive web demo**](https://raselmandol.github.io/git-ml/) to test the trained model instantly! Draw a digit and see the AI predict it in real-time.
+### Option 1: View the Live Dashboard
+Visit the [**training dashboard**](https://raselmandol.github.io/git-ml/) to view real-time training metrics, model performance insights, and automated pipeline results!
 
 ### Option 2: Run Locally
 1. **Clone the repository:**
@@ -92,12 +92,12 @@ The workflow automatically runs on:
 
 Results are automatically committed back to the repository!
 
-**Need detailed setup instructions?** Check out our [comprehensive setup guide](SETUP.md)!
+**Need detailed setup instructions?** Check out the [comprehensive setup guide](SETUP.md)!
 
 ## Example Output
 
 ### Training Metrics & Visualizations
-Our automated pipeline generates comprehensive training reports with interactive visualizations:
+The automated pipeline generates comprehensive training reports with interactive visualizations:
 
 **Training Progress:**
 ![Training Loss](images/train_loss.png)
@@ -136,10 +136,10 @@ Want to experiment? Here are some ideas:
 Contributions are welcome! Here's how you can help:
 
 1. Fork the repository
-2. Create a feature branch: `git checkout -b amazing-feature`
-3. Make your changes and add tests
-4. Commit your changes: `git commit -m 'Add amazing feature'`
-5. Push to the branch: `git push origin amazing-feature`
+2. Create a feature branch: `git checkout -b feature-name`
+3. Make changes and add tests
+4. Commit changes: `git commit -m 'Add feature description'`
+5. Push to the branch: `git push origin feature-name`
 6. Open a Pull Request
 
 ## License
@@ -155,6 +155,12 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - Copilot, Claude Sonnet 4, GPT-4.1: For always helping me debug errors, suggest code and fixes, and build this repo--including this README.
 
 ---
+
+<div align="center> 
+
+** The last commits to this repository were pushed using koelbit-r3 MCP, which is currently under development. **
+
+</div>
 
 <div align="center">
 
