@@ -1,19 +1,138 @@
 <!DOCTYPE html>
-<html lang                <div class="c                <div class="results-container">
-                    <h2>AI Prediction</h2>
-                    <div class="prediction-display" id="predictionDisplay">
-                        <div class="prediction-placeholder">
-                            <span class="placeholder-text">Draw a digit to see prediction</span>
-                        </div>
-                    </div>ntainer">
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MNIST Digit Recognition - Interactive Demo</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>MNIST</text></svg>">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <h1>MNIST Digit Recognition</h1>
+                <p>Draw a digit and watch the demo predict it. (Note: This is a simulation, not the real trained model.)</p>
+                <div class="badges">
+                    <span class="badge model">PyTorch Model</span>
+                    <span class="badge status">Live Demo</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main">
+            <div class="demo-section">
+                <div class="canvas-container">
                     <h2>Draw Here</h2>
                     <div class="canvas-wrapper">
-                        <canvas id="drawingCanvas"></canvas>
+                        <canvas id="drawingCanvas" width="280" height="280"></canvas>
                         <div class="canvas-overlay" id="canvasOverlay">
                             <div class="overlay-content">
                                 <span class="overlay-text">Click and drag to draw a digit</span>
                             </div>
                         </div>
+                    </div>
+                    <div class="canvas-controls">
+                        <button id="clearBtn" class="btn btn-secondary">Clear</button>
+                        <button id="predictBtn" class="btn btn-primary">Predict</button>
+                    </div>
+                </div>
+
+                <div class="results-container">
+                    <h2>AI Prediction</h2>
+                    <div class="prediction-display" id="predictionDisplay">
+                        <div class="prediction-placeholder">
+                            <span class="placeholder-text">Draw a digit to see prediction</span>
+                        </div>
+                    </div>
+                    <div class="confidence-bars" id="confidenceBars"></div>
+                </div>
+            </div>
+
+            <!-- Instructions -->
+            <div class="instructions">
+                <h3>How to Use</h3>
+                <div class="instruction-grid">
+                    <div class="instruction-item">
+                        <span class="instruction-number">1</span>
+                        <div class="instruction-content">
+                            <h4>Draw</h4>
+                            <p>Use your mouse or finger to draw a digit (0-9) in the canvas above.</p>
+                        </div>
+                    </div>
+                    <div class="instruction-item">
+                        <span class="instruction-number">2</span>
+                        <div class="instruction-content">
+                            <h4>Predict</h4>
+                            <p>Click the "Predict" button to let the demo analyze your drawing.</p>
+                        </div>
+                    </div>
+                    <div class="instruction-item">
+                        <span class="instruction-number">3</span>
+                        <div class="instruction-content">
+                            <h4>Explore</h4>
+                            <p>Try different digits and see how confident the demo is in its predictions.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Model Info -->
+            <div class="model-info">
+                <h3>About the Model</h3>
+                <div class="info-grid">
+                    <div class="info-card">
+                        <h4>Architecture</h4>
+                        <ul>
+                            <li>Neural Network with 784 inputs</li>
+                            <li>Output layer: 10 classes (digits 0-9)</li>
+                        </ul>
+                    </div>
+                    <div class="info-card">
+                        <h4>Training</h4>
+                        <ul>
+                            <li>Dataset: MNIST (60k training images)</li>
+                            <li>Optimizer: SGD (learning rate: 0.01)</li>
+                            <li>Epochs: 10</li>
+                        </ul>
+                    </div>
+                    <div class="info-card">
+                        <h4>Performance</h4>
+                        <ul>
+                            <li>Dataset: MNIST handwritten digits</li>
+                            <li>Model: Simple neural network</li>
+                            <li>Training Time: ~3 minutes</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <div class="footer-content">
+                <div class="footer-links">
+                    <a href="https://github.com/raselmandol/git-ml" target="_blank" class="footer-link">View Source Code</a>
+                    <a href="https://github.com/raselmandol/git-ml/blob/main/train_output.md" target="_blank" class="footer-link">Training Logs</a>
+                    <a href="https://github.com/raselmandol/git-ml/blob/main/test_output.md" target="_blank" class="footer-link">Test Results</a>
+                </div>
+                <p class="footer-text">Built using PyTorch • Automated with GitHub Actions • Hosted on GitHub Pages</p>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Loading overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-spinner"></div>
+        <p>Loading AI model...</p>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
                     </div>
                     <div class="canvas-controls">
                         <button id="clearBtn" class="btn btn-secondary">Clear</button>

@@ -68,7 +68,21 @@ train_log += f"\n## Training Accuracy Graph\n![Training Accuracy](images/train_a
 save_markdown_log("train_output.md", train_log)
 
 # Save trained model
+
+# Save PyTorch model
 torch.save(model.state_dict(), "mnist_model.pt")
+
+# Export ONNX model for browser inference
+dummy_input = torch.randn(1, 1, 28, 28, device=device)
+torch.onnx.export(
+    model,
+    dummy_input,
+    "docs/mnist_model.onnx",
+    input_names=["input"],
+    output_names=["output"],
+    opset_version=11,
+    dynamic_axes={"input": {0: "batch_size"}, "output": {0: "batch_size"}}
+)
 
 # Test Loop
 model.eval()
