@@ -10,6 +10,7 @@ EPOCHS = 10
 BATCH_SIZE = 64
 LR = 0.01
 
+# Load MNIST
 transform = transforms.ToTensor()
 train_data = datasets.MNIST(root='./data', train=True, download=True, transform=transform)
 test_data = datasets.MNIST(root='./data', train=False, download=True, transform=transform)
@@ -17,6 +18,7 @@ test_data = datasets.MNIST(root='./data', train=False, download=True, transform=
 train_loader = DataLoader(train_data, batch_size=BATCH_SIZE, shuffle=True)
 test_loader = DataLoader(test_data, batch_size=BATCH_SIZE)
 
+# Define Model
 class Net(nn.Module):
     def __init__(self):
         super().__init__()
@@ -34,12 +36,13 @@ model = Net().to(device)
 optimizer = optim.SGD(model.parameters(), lr=LR)
 criterion = nn.CrossEntropyLoss()
 
-log = "# Training Metrics\n\n"
-log += "| Epoch | Loss | Accuracy |\n|-------|------|----------|\n"
+# Training Loop
+train_log = "# Training Metrics\n\n"
+train_log += "| Epoch | Loss | Accuracy |\n|-------|------|----------|\n"
 
 for epoch in range(1, EPOCHS + 1):
     model.train()
-    epoch_loss = 0
+    total_loss = 0
     correct = 0
 
     for inputs, labels in train_loader:
@@ -49,16 +52,37 @@ for epoch in range(1, EPOCHS + 1):
         loss = criterion(outputs, labels)
         loss.backward()
         optimizer.step()
-        epoch_loss += loss.item()
+        total_loss += loss.item()
         correct += (outputs.argmax(1) == labels).sum().item()
 
     accuracy = correct / len(train_loader.dataset)
-    log += f"| {epoch} | {epoch_loss:.4f} | {accuracy:.4f} |\n"
+    train_log += f"| {epoch} | {total_loss:.4f} | {accuracy:.4f} |\n"
 
-save_markdown_log("train_output.md", log)
+save_markdown_log("train_output.md", train_log)
 
 # Save trained model
 torch.save(model.state_dict(), "mnist_model.pt")
 
-# Run test predictions and log them
-predict_and_log_samples(model, test_loader, device, "test_output.md")
+# Test Loop
+model.eval()
+test_loss = 0
+correct = 0
+with torch.no_grad():
+    for inputs, labels in test_loader:
+        inputs, labels = inputs.to(device), labels.to(device)
+        outputs = model(inputs)
+        test_loss += criterion(outputs, labels).item()
+        correct += (outputs.argmax(1) == labels).sum().item()
+
+test_accuracy = correct / len(test_loader.dataset)
+test_loss /= len(test_loader)
+
+test_log = "# Test Results\n\n"
+test_log += f"- **Test Loss**: {test_loss:.4f}\n"
+test_log += f"- **Test Accuracy**: {test_accuracy:.4f}\n\n"
+test_log += "## Sample Predictions\n\n"
+test_log += "| Image Index | True Label | Predicted Label |\n"
+test_log += "|-------------|------------|------------------|\n"
+test_log += predict_and_log_samples(model, test_loader, device)
+
+save_markdown_log("test_output.md", test_log)
