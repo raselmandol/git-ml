@@ -1,0 +1,36 @@
+name: MNIST Training Pipeline
+
+on:
+  push:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 */6 * * *'  # Every 6 hours
+
+jobs:
+  train:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.10'
+
+    - name: Install dependencies
+      run: |
+        pip install -r requirements.txt
+
+    - name: Run training
+      run: |
+        python train_mnist.py
+
+    - name: Commit results (logs + model)
+      run: |
+        git config --global user.name "github-actions"
+        git config --global user.email "actions@github.com"
+        git add train_output.md test_output.md mnist_model.pt
+        git commit -m "📈 Auto: Updated training logs and model"
+        git push
