@@ -92,8 +92,6 @@ test_log += "## Sample Predictions\n\n"
 test_log += "| Image Index | True Label | Predicted Label |\n"
 test_log += "|-------------|------------|------------------|\n"
 test_log += predict_and_log_samples(model, test_loader, device)
-save_markdown_log("test_output.md", test_log)
-sample_imgs = save_test_samples_images(model, test_loader, device, num_samples=5)
 sample_imgs = save_test_samples_images(model, test_loader, device, out_dir="images", num_samples=5)
 test_log += "\n### Sample Images\n"
 for idx, label, pred, img_path in sample_imgs:
