@@ -29,12 +29,12 @@ def export_model_info():
     if os.path.exists('mnist_model.pt'):
         try:
             model.load_state_dict(torch.load('mnist_model.pt', map_location='cpu'))
-            print("✅ Loaded trained model weights")
+            print("✓ Loaded trained model weights")
         except Exception as e:
-            print(f"⚠️  Could not load model: {e}")
+            print(f"Warning: Could not load model: {e}")
             print("Using randomly initialized weights")
     else:
-        print("⚠️  No trained model found, using random weights")
+        print("Warning: No trained model found, using random weights")
     
     # Export model information
     model_info = {
@@ -63,11 +63,11 @@ def export_model_info():
     with open('docs/model_info.json', 'w') as f:
         json.dump(model_info, f, indent=2)
     
-    print("📁 Model information exported to docs/model_info.json")
-    print("🌐 This can be used by the web demo for display purposes")
+    print("Model information exported to docs/model_info.json")
+    print("This can be used by the web demo for display purposes")
     
     # For future: actual model conversion to ONNX or TensorFlow.js format
-    print("\n💡 Future enhancement: Convert to ONNX or TensorFlow.js for real inference")
+    print("\nFuture enhancement: Convert to ONNX or TensorFlow.js for real inference")
     print("   - torch.onnx.export() for ONNX format")
     print("   - Use onnx-web or tensorflow.js for browser inference")
 
