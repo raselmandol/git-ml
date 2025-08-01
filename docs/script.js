@@ -262,6 +262,47 @@ class MNISTDemo {
         const overlay = document.getElementById('loadingOverlay');
         overlay.classList.remove('show');
     }
+    
+    startDrawing(e) {
+        this.isDrawing = true;
+        this.hideOverlay();
+        const pos = this.getEventPos(e);
+        this.lastX = pos.x;
+        this.lastY = pos.y;
+        this.clearPrediction();
+    }
+    
+    draw(e) {
+        if (!this.isDrawing) return;
+        const pos = this.getEventPos(e);
+        this.ctx.beginPath();
+        this.ctx.moveTo(this.lastX, this.lastY);
+        this.ctx.lineTo(pos.x, pos.y);
+        this.ctx.stroke();
+        this.lastX = pos.x;
+        this.lastY = pos.y;
+    }
+    
+    stopDrawing() {
+        this.isDrawing = false;
+    }
+    
+    handleTouch(e) {
+        e.preventDefault();
+        const touch = e.touches[0];
+        const mouseEvent = new MouseEvent(e.type === 'touchstart' ? 'mousedown' : 
+                                         e.type === 'touchmove' ? 'mousemove' : 'mouseup', {
+            clientX: touch.clientX,
+            clientY: touch.clientY
+        });
+        this.canvas.dispatchEvent(mouseEvent);
+    }
+    
+    clearCanvas() {
+        this.ctx.fillStyle = '#ffffff';
+        this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+        this.showOverlay();
+    }
 }
 
 // Initialize the demo when the page loads
