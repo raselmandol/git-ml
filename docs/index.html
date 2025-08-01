@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MNIST Training Dashboard - Real-Time ML Insights</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>ML</text></svg>">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <h1>MNIST Training Dashboard</h1>
+                <p>Real-time insights from automated neural network training pipeline</p>
+                <div class="badges">
+                    <span class="badge status" id="trainingStatus">Training Active</span>
+                    <span class="badge model">PyTorch + ONNX</span>
+                    <span class="badge automation">GitHub Actions</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main">
+            <!-- Performance Overview -->
+            <section class="performance-overview">
+                <h2>Current Model Performance</h2>
+                <div class="metrics-grid">
+                    <div class="metric-card">
+                        <div class="metric-icon">ACC</div>
+                        <div class="metric-content">
+                            <h3>Test Accuracy</h3>
+                            <div class="metric-value" id="testAccuracy">93.00%</div>
+                            <div class="metric-change positive">+0.2% from last run</div>
+                        </div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-icon">LOSS</div>
+                        <div class="metric-content">
+                            <h3>Test Loss</h3>
+                            <div class="metric-value" id="testLoss">0.2529</div>
+                            <div class="metric-change positive">-0.012 from last run</div>
+                        </div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-icon">TIME</div>
+                        <div class="metric-content">
+                            <h3>Training Time</h3>
+                            <div class="metric-value" id="trainingTime">~3 min</div>
+                            <div class="metric-change neutral">Latest run</div>
+                        </div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-icon">EPOCH</div>
+                        <div class="metric-content">
+                            <h3>Total Epochs</h3>
+                            <div class="metric-value" id="totalEpochs">10</div>
+                            <div class="metric-change neutral">Standard config</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Training Progress -->
+            <section class="training-progress">
+                <h2>Training Progress</h2>
+                <div class="progress-container">
+                    <div class="chart-wrapper">
+                        <h3>Loss Progression</h3>
+                        <div class="chart-placeholder" id="lossChart">
+                            <img src="../images/train_loss.png" alt="Training Loss" class="chart-image">
+                        </div>
+                    </div>
+                    <div class="chart-wrapper">
+                        <h3>Accuracy Progression</h3>
+                        <div class="chart-placeholder" id="accuracyChart">
+                            <img src="../images/train_accuracy.png" alt="Training Accuracy" class="chart-image">
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Recent Test Results -->
+            <section class="test-results">
+                <h2>Recent Test Results</h2>
+                <div class="test-grid">
+                    <div class="test-summary">
+                        <h3>Latest Test Run</h3>
+                        <div class="test-details" id="testDetails">
+                            <div class="detail-item">
+                                <span class="label">Samples Tested:</span>
+                                <span class="value">10,000</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="label">Correct Predictions:</span>
+                                <span class="value" id="correctPredictions">9,300</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="label">Error Rate:</span>
+                                <span class="value" id="errorRate">7.0%</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="label">Confidence Score:</span>
+                                <span class="value" id="confidenceScore">0.953</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="sample-predictions">
+                        <h3>Sample Predictions</h3>
+                        <div class="predictions-grid" id="predictionsGrid">
+                            <!-- Will be populated by JavaScript -->
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Model Architecture -->
+            <section class="model-architecture">
+                <h2>Model Architecture</h2>
+                <div class="architecture-grid">
+                    <div class="layer-card">
+                        <h4>Input Layer</h4>
+                        <p>28x28 grayscale images</p>
+                        <span class="layer-size">784 neurons</span>
+                    </div>
+                    <div class="layer-arrow">→</div>
+                    <div class="layer-card">
+                        <h4>Hidden Layer</h4>
+                        <p>Fully connected with ReLU</p>
+                        <span class="layer-size">128 neurons</span>
+                    </div>
+                    <div class="layer-arrow">→</div>
+                    <div class="layer-card">
+                        <h4>Output Layer</h4>
+                        <p>Digit classification</p>
+                        <span class="layer-size">10 classes</span>
+                    </div>
+                </div>
+                <div class="training-config">
+                    <h3>Training Configuration</h3>
+                    <div class="config-grid">
+                        <div class="config-item">
+                            <span class="config-label">Optimizer:</span>
+                            <span class="config-value">SGD</span>
+                        </div>
+                        <div class="config-item">
+                            <span class="config-label">Learning Rate:</span>
+                            <span class="config-value">0.01</span>
+                        </div>
+                        <div class="config-item">
+                            <span class="config-label">Batch Size:</span>
+                            <span class="config-value">64</span>
+                        </div>
+                        <div class="config-item">
+                            <span class="config-label">Loss Function:</span>
+                            <span class="config-value">CrossEntropy</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Automation Pipeline -->
+            <section class="automation-pipeline">
+                <h2>Automation Pipeline</h2>
+                <div class="pipeline-steps">
+                    <div class="step-card active">
+                        <div class="step-number">1</div>
+                        <h4>Code Push</h4>
+                        <p>Triggers automated training</p>
+                    </div>
+                    <div class="step-arrow">→</div>
+                    <div class="step-card active">
+                        <div class="step-number">2</div>
+                        <h4>Model Training</h4>
+                        <p>10 epochs on GitHub runners</p>
+                    </div>
+                    <div class="step-arrow">→</div>
+                    <div class="step-card active">
+                        <div class="step-number">3</div>
+                        <h4>ONNX Export</h4>
+                        <p>Convert for web deployment</p>
+                    </div>
+                    <div class="step-arrow">→</div>
+                    <div class="step-card active">
+                        <div class="step-number">4</div>
+                        <h4>Results Update</h4>
+                        <p>Auto-commit logs & models</p>
+                    </div>
+                </div>
+                <div class="pipeline-schedule">
+                    <h3>Training Schedule</h3>
+                    <ul>
+                        <li>Every push to main branch</li>
+                        <li>Every 6 hours (automated)</li>
+                        <li>Manual trigger available</li>
+                        <li>Results auto-deployed to this page</li>
+                    </ul>
+                </div>
+            </section>
+        </main>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <div class="footer-content">
+                <div class="footer-links">
+                    <a href="https://github.com/raselmandol/git-ml" target="_blank" class="footer-link">Source Code</a>
+                    <a href="https://github.com/raselmandol/git-ml/blob/main/train_output.md" target="_blank" class="footer-link">Training Logs</a>
+                    <a href="https://github.com/raselmandol/git-ml/blob/main/test_output.md" target="_blank" class="footer-link">Test Results</a>
+                    <a href="https://github.com/raselmandol/git-ml/actions" target="_blank" class="footer-link">Actions</a>
+                </div>
+                <p class="footer-text">
+                    Built with PyTorch - Automated with GitHub Actions - Updated every 6 hours
+                    <br>
+                    <span class="last-update">Last updated: <span id="lastUpdate">Loading...</span></span>
+                </p>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Loading overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-spinner"></div>
+        <p>Loading latest training data...</p>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
+

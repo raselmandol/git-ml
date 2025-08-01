@@ -94,6 +94,7 @@ Results are automatically committed back to the repository!
 
 **Need detailed setup instructions?** Check out the [comprehensive setup guide](SETUP.md)!
 
+
 ## Example Output
 
 ### Training Metrics & Visualizations
@@ -156,15 +157,15 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ---
 
-<div align="center> 
+<div align="center"> 
 
-** The last commits to this repository were pushed using koelbit-r3 MCP, which is currently under development. **
+**The last commits to this repository were pushed using koelbit-r3 MCP, which is currently under development.**
 
 </div>
 
 <div align="center">
 
-** Star this repo if you found it helpful!**
+**Star this repo if you found it helpful!**
 
 [Live Demo](https://raselmandol.github.io/git-ml/) • [Latest Results](train_output.md) • [Report Bug](https://github.com/raselmandol/git-ml/issues) • [Request Feature](https://github.com/raselmandol/git-ml/issues)
 
