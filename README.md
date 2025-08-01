@@ -1,54 +1,165 @@
-# MNIST Training & Testing Automation
+#  MNIST Training & Testing Automation
+
+[![Training Pipeline](https://github.com/raselmandol/git-ml/actions/workflows/train_mnist.yml/badge.svg)](https://github.com/raselmandol/git-ml/actions/workflows/train_mnist.yml)
+[![GitHub Pages](https://github.com/raselmandol/git-ml/actions/workflows/pages/pages-build-deployment/badge.svg)](https://raselmandol.github.io/git-ml/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
+[![PyTorch](https://img.shields.io/badge/PyTorch-EE4C2C?logo=pytorch&logoColor=white)](https://pytorch.org/)
+
+> **Try it live!** Visit our [interactive demo](https://raselmandol.github.io/git-ml/) to test the trained model with your own handwritten digits!
 
 This repository provides a fully automated pipeline for training and testing a simple neural network on the MNIST dataset using PyTorch. All steps are orchestrated via GitHub Actions, so you get fresh results and logs every time you push or on a schedule.
 
-## Features
-- **Automatic Training & Testing:** Runs on every push, manual trigger, or every 6 hours.
-- **Markdown Logs:** Training and test metrics are logged in markdown files for easy viewing.
-- **Visualizations:**
-  - Training loss and accuracy graphs are generated and embedded in logs.
-  - Test logs include sample MNIST images with true and predicted labels.
-- **Model Saving:** Trained model weights are saved for reuse.
-- **Easy to Extend:** Simple code structure for experimenting with architectures or datasets.
+##  Features (preparing to-do)
+- **Automatic Training & Testing:** Runs on every push, manual trigger, or every 6 hours
+- **Rich Visualizations:** Training loss and accuracy graphs with sample prediction images
+- **Detailed Logs:** Beautiful markdown reports with embedded charts and images
+- **Model Persistence:** Trained model weights are saved and version-controlled
+- **Interactive Demo:** Test the model live on GitHub Pages
+- **Easy to Extend:** Simple, clean code structure for experimentation
 
-## Outputs
-- `train_output.md`: Contains a table of training metrics and embedded graphs for loss and accuracy.
-- `test_output.md`: Shows test loss/accuracy and sample predictions with images.
-- `mnist_model.pt`: The trained model weights.
-- PNG images: Graphs and sample prediction images are saved in the repo and referenced in logs.
+##  Project Structure
 
-## Usage
+```
+git-ml/
+├── train_mnist.py          # Main training script
+├── utils.py               # Utility functions for logging & visualization
+├── requirements.txt        # Python dependencies
+├── train_output.md         # Training metrics & graphs
+├── test_output.md          # Test results & sample predictions
+├── mnist_model.pt          # Trained model weights
+├── images/                # Generated plots & sample images
+├── docs/                   # GitHub Pages website
+│   ├── index.html            # Interactive demo page
+│   ├── style.css             # Responsive styling
+│   └── script.js             # Model inference logic
+└── .github/workflows/      # Automation workflows
+    └── train_mnist.yml       # Training pipeline
+    └── 
+```
 
-### Local Run
-1. Install dependencies:
-   ```powershell
+## Technical Details 
+
+### Model Architecture
+- **Input:** 28×28 grayscale images (784 features)
+- **Output:** 10 classes (digits 0-9)
+- **Optimizer:** SGD with learning rate 0.01
+- **Loss Function:** Cross-entropy loss
+
+### Training Configuration
+- **Epochs:** 10
+- **Batch Size:** 64
+- **Dataset:** MNIST (60k train, 10k test)
+- **Device:** Auto-detection (CUDA if available, else CPU)
+
+### Performance Metrics
+- **Training Accuracy:** ~92.5%
+- **Test Accuracy:** ~92.8%
+- **Training Time:** ~2-3 minutes on CPU
+
+## Quick Start 
+
+### Option 1: Try the Live Demo
+Visit this [**interactive web demo**](https://raselmandol.github.io/git-ml/) to test the trained model instantly! Draw a digit and see the AI predict it in real-time.
+
+### Option 2: Run Locally
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/raselmandol/git-ml.git
+   cd git-ml
+   ```
+
+2. **Install dependencies:**
+   ```bash
    pip install -r requirements.txt
    ```
-2. Run training:
-   ```powershell
+
+3. **Run training:**
+   ```bash
    python train_mnist.py
    ```
-3. View results in `train_output.md` and `test_output.md`.
 
-### GitHub Actions
-- The workflow file `.github/workflows/train_mnist.yml` automates everything. Results and model are committed back to the repo after each run.
+4. **View results:**
+   - Check `train_output.md` for training metrics and graphs
+   - Check `test_output.md` for test results and sample predictions
+   - Images are saved in the `images/` folder
+
+### Option 3: GitHub Actions (Automated)
+The workflow automatically runs on:
+- Every push to main branch
+- Manual trigger via Actions tab
+- Every 6 hours (scheduled)
+
+Results are automatically committed back to the repository!
+
+**Need detailed setup instructions?** Check out our [comprehensive setup guide](SETUP.md)!
 
 ## Example Output
 
-**Training Metrics Table & Graphs:**
-![Training Loss](train_loss.png)
-![Training Accuracy](train_accuracy.png)
+### Training Metrics & Visualizations
+Our automated pipeline generates comprehensive training reports with interactive visualizations:
 
-**Test Results & Sample Predictions:**
-![Sample 0](sample_0_T7_P7.png) True: 7, Pred: 7
-![Sample 1](sample_1_T2_P2.png) True: 2, Pred: 2
+**Training Progress:**
+![Training Loss](images/train_loss.png)
+![Training Accuracy](images/train_accuracy.png)
+
+### Test Results & Sample Predictions
+The model is thoroughly evaluated on the test set, with sample predictions displayed:
+
+**Sample MNIST Predictions:**
+![Sample 1727](images/sample_1727_T3_P3.png) ![Sample 411](images/sample_411_T7_P7.png) ![Sample 2230](images/sample_2230_T3_P3.png)
+
+*True labels vs Predicted labels are shown for each sample*
 
 ## Customization
-- Modify `train_mnist.py` to change model architecture, epochs, batch size, etc.
-- Extend `utils.py` for more advanced logging or visualization.
+
+Want to experiment? Here are some ideas:
+
+### Model Improvements
+- Add more hidden layers or change activation functions in `train_mnist.py`
+- Experiment with different optimizers (Adam, AdamW, etc.)
+- Try data augmentation techniques
+- Implement batch normalization or dropout
+
+### Visualization Enhancements
+- Modify `utils.py` to add confusion matrices
+- Create loss/accuracy comparison charts
+- Add model architecture diagrams
+
+### Automation Extensions
+- Add model performance benchmarking
+- Implement automatic hyperparameter tuning
+- Set up notification systems for training completion
+
+## Contributing
+
+Contributions are welcome! Here's how you can help:
+
+1. Fork the repository
+2. Create a feature branch: `git checkout -b amazing-feature`
+3. Make your changes and add tests
+4. Commit your changes: `git commit -m 'Add amazing feature'`
+5. Push to the branch: `git push origin amazing-feature`
+6. Open a Pull Request
 
 ## License
-MIT
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## Acknowledgments
+
+- PyTorch team for the amazing deep learning framework
+- GitHub Actions for seamless CI/CD
+- MNIST dataset creators for the classic benchmark
+- The open-source community for inspiration and tools
+- Copilot, Claude Sonnet 4, GPT-4.1: For always helping me debug errors, suggest code and fixes, and build this repo--including this README.
 
 ---
-Enjoy experimenting with MNIST and PyTorch, now with beautiful logs and images!
+
+<div align="center">
+
+** Star this repo if you found it helpful!**
+
+[Live Demo](https://raselmandol.github.io/git-ml/) • [Latest Results](train_output.md) • [Report Bug](https://github.com/raselmandol/git-ml/issues) • [Request Feature](https://github.com/raselmandol/git-ml/issues)
+
+</div>
