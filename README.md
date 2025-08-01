@@ -35,7 +35,7 @@ git-ml/
 │   └── script.js             # Model inference logic
 └── .github/workflows/      # Automation workflows
     └── train_mnist.yml       # Training pipeline
-    └── 
+    └── pages.yml
 ```
 
 ## Technical Details 
