@@ -1,7 +1,25 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
+<html lang                <div class="c                <div class="results-container">
+                    <h2>AI Prediction</h2>
+                    <div class="prediction-display" id="predictionDisplay">
+                        <div class="prediction-placeholder">
+                            <span class="placeholder-text">Draw a digit to see prediction</span>
+                        </div>
+                    </div>ntainer">
+                    <h2>Draw Here</h2>
+                    <div class="canvas-wrapper">
+                        <canvas id="drawingCanvas"></canvas>
+                        <div class="canvas-overlay" id="canvasOverlay">
+                            <div class="overlay-content">
+                                <span class="overlay-text">Click and drag to draw a digit</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="canvas-controls">
+                        <button id="clearBtn" class="btn btn-secondary">Clear</button>
+                        <button id="predictBtn" class="btn btn-primary">Predict</button>
+                    </div>
+                </div>    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MNIST Digit Recognition - Interactive Demo</title>
     <link rel="stylesheet" href="style.css">
@@ -16,7 +34,6 @@
                 <h1>MNIST Digit Recognition</h1>
                 <p>Draw a digit and watch our AI predict it in real-time!</p>
                 <div class="badges">
-                    <span class="badge accuracy">92.8% Accuracy</span>
                     <span class="badge model">PyTorch Model</span>
                     <span class="badge status">Live Demo</span>
                 </div>
@@ -108,8 +125,8 @@
                     <div class="info-card">
                         <h4>Performance</h4>
                         <ul>
-                            <li>Training Accuracy: 92.5%</li>
-                            <li>Test Accuracy: 92.8%</li>
+                            <li>Dataset: MNIST handwritten digits</li>
+                            <li>Model: Simple neural network</li>
                             <li>Training Time: ~3 minutes</li>
                         </ul>
                     </div>
@@ -132,7 +149,7 @@
                     </a>
                 </div>
                 <p class="footer-text">
-                    Built with ❤️ using PyTorch • Automated with GitHub Actions • Hosted on GitHub Pages
+                    Built using PyTorch • Automated with GitHub Actions • Hosted on GitHub Pages
                 </p>
             </div>
         </footer>

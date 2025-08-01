@@ -1,4 +1,4 @@
-#  MNIST Training & Testing Automation
+# MNIST Training & Testing Automation  MNIST Training & Testing Automation
 
 [![Training Pipeline](https://github.com/raselmandol/git-ml/actions/workflows/train_mnist.yml/badge.svg)](https://github.com/raselmandol/git-ml/actions/workflows/train_mnist.yml)
 [![GitHub Pages](https://github.com/raselmandol/git-ml/actions/workflows/pages/pages-build-deployment/badge.svg)](https://raselmandol.github.io/git-ml/)
@@ -10,7 +10,7 @@
 
 This repository provides a fully automated pipeline for training and testing a simple neural network on the MNIST dataset using PyTorch. All steps are orchestrated via GitHub Actions, so you get fresh results and logs every time you push or on a schedule.
 
-##  Features (preparing to-do)
+## Features
 - **Automatic Training & Testing:** Runs on every push, manual trigger, or every 6 hours
 - **Rich Visualizations:** Training loss and accuracy graphs with sample prediction images
 - **Detailed Logs:** Beautiful markdown reports with embedded charts and images
@@ -18,7 +18,7 @@ This repository provides a fully automated pipeline for training and testing a s
 - **Interactive Demo:** Test the model live on GitHub Pages
 - **Easy to Extend:** Simple, clean code structure for experimentation
 
-##  Project Structure
+## Project Structure
 
 ```
 git-ml/
@@ -53,8 +53,8 @@ git-ml/
 - **Device:** Auto-detection (CUDA if available, else CPU)
 
 ### Performance Metrics
-- **Training Accuracy:** ~92.5%
-- **Test Accuracy:** ~92.8%
+- **Model Type:** Simple feedforward neural network
+- **Dataset:** MNIST handwritten digits
 - **Training Time:** ~2-3 minutes on CPU
 
 ## Quick Start 
