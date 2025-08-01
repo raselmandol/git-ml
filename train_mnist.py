@@ -4,7 +4,6 @@ import torch.nn as nn
 import torch.optim as optim
 from torchvision import datasets, transforms
 from torch.utils.data import DataLoader
-from utils import save_markdown_log, predict_and_log_samples
 from utils import save_markdown_log, predict_and_log_samples, save_training_graphs, save_test_samples_images
 import os
 
