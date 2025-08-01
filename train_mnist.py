@@ -5,6 +5,7 @@ import torch.optim as optim
 from torchvision import datasets, transforms
 from torch.utils.data import DataLoader
 from utils import save_markdown_log, predict_and_log_samples
+from utils import save_markdown_log, predict_and_log_samples, save_training_graphs, save_test_samples_images
 
 EPOCHS = 10
 BATCH_SIZE = 64
@@ -40,11 +41,13 @@ criterion = nn.CrossEntropyLoss()
 train_log = "# Training Metrics\n\n"
 train_log += "| Epoch | Loss | Accuracy |\n|-------|------|----------|\n"
 
+save_markdown_log("train_output.md", train_log)
+train_losses = []
+train_accuracies = []
 for epoch in range(1, EPOCHS + 1):
     model.train()
     total_loss = 0
     correct = 0
-
     for inputs, labels in train_loader:
         inputs, labels = inputs.to(device), labels.to(device)
         optimizer.zero_grad()
@@ -54,10 +57,13 @@ for epoch in range(1, EPOCHS + 1):
         optimizer.step()
         total_loss += loss.item()
         correct += (outputs.argmax(1) == labels).sum().item()
-
     accuracy = correct / len(train_loader.dataset)
+    train_losses.append(total_loss)
+    train_accuracies.append(accuracy)
     train_log += f"| {epoch} | {total_loss:.4f} | {accuracy:.4f} |\n"
-
+loss_img, acc_img = save_training_graphs(train_losses, train_accuracies)
+train_log += f"\n## Training Loss Graph\n![Training Loss]({loss_img})\n"
+train_log += f"\n## Training Accuracy Graph\n![Training Accuracy]({acc_img})\n"
 save_markdown_log("train_output.md", train_log)
 
 # Save trained model
@@ -84,5 +90,9 @@ test_log += "## Sample Predictions\n\n"
 test_log += "| Image Index | True Label | Predicted Label |\n"
 test_log += "|-------------|------------|------------------|\n"
 test_log += predict_and_log_samples(model, test_loader, device)
-
+save_markdown_log("test_output.md", test_log)
+sample_imgs = save_test_samples_images(model, test_loader, device, num_samples=5)
+test_log += "\n### Sample Images\n"
+for idx, label, pred, img_path in sample_imgs:
+    test_log += f"![Sample {idx}](./{img_path}) True: {label}, Pred: {pred}\n"
 save_markdown_log("test_output.md", test_log)
