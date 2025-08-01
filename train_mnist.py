@@ -6,6 +6,7 @@ from torchvision import datasets, transforms
 from torch.utils.data import DataLoader
 from utils import save_markdown_log, predict_and_log_samples
 from utils import save_markdown_log, predict_and_log_samples, save_training_graphs, save_test_samples_images
+import os
 
 EPOCHS = 10
 BATCH_SIZE = 64
@@ -57,13 +58,14 @@ for epoch in range(1, EPOCHS + 1):
         optimizer.step()
         total_loss += loss.item()
         correct += (outputs.argmax(1) == labels).sum().item()
+    avg_loss = total_loss / len(train_loader)
     accuracy = correct / len(train_loader.dataset)
-    train_losses.append(total_loss)
+    train_losses.append(avg_loss)
     train_accuracies.append(accuracy)
-    train_log += f"| {epoch} | {total_loss:.4f} | {accuracy:.4f} |\n"
-loss_img, acc_img = save_training_graphs(train_losses, train_accuracies)
-train_log += f"\n## Training Loss Graph\n![Training Loss]({loss_img})\n"
-train_log += f"\n## Training Accuracy Graph\n![Training Accuracy]({acc_img})\n"
+    train_log += f"| {epoch} | {avg_loss:.4f} | {accuracy:.4f} |\n"
+loss_img, acc_img = save_training_graphs(train_losses, train_accuracies, out_dir="images")
+train_log += f"\n## Training Loss Graph\n![Training Loss](images/train_loss.png)\n"
+train_log += f"\n## Training Accuracy Graph\n![Training Accuracy](images/train_accuracy.png)\n"
 save_markdown_log("train_output.md", train_log)
 
 # Save trained model
@@ -92,7 +94,9 @@ test_log += "|-------------|------------|------------------|\n"
 test_log += predict_and_log_samples(model, test_loader, device)
 save_markdown_log("test_output.md", test_log)
 sample_imgs = save_test_samples_images(model, test_loader, device, num_samples=5)
+sample_imgs = save_test_samples_images(model, test_loader, device, out_dir="images", num_samples=5)
 test_log += "\n### Sample Images\n"
 for idx, label, pred, img_path in sample_imgs:
-    test_log += f"![Sample {idx}](./{img_path}) True: {label}, Pred: {pred}\n"
+    img_name = os.path.basename(img_path)
+    test_log += f"![Sample {idx}](images/{img_name}) True: {label}, Pred: {pred}\n"
 save_markdown_log("test_output.md", test_log)
