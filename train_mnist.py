@@ -41,6 +41,10 @@ train_log = "# Training Metrics\n\n"
 train_log += "| Epoch | Loss | Accuracy |\n|-------|------|----------|\n"
 
 save_markdown_log("train_output.md", train_log)
+# Also write logs into docs/ for GitHub Pages
+import shutil, time
+os.makedirs("docs", exist_ok=True)
+save_markdown_log(os.path.join("docs", "train_output.md"), train_log)
 train_losses = []
 train_accuracies = []
 for epoch in range(1, EPOCHS + 1):
@@ -110,3 +114,35 @@ for idx, label, pred, img_path in sample_imgs:
     img_name = os.path.basename(img_path)
     test_log += f"![Sample {idx}](images/{img_name}) True: {label}, Pred: {pred}\n"
 save_markdown_log("test_output.md", test_log)
+# Mirror test log into docs/
+save_markdown_log(os.path.join("docs", "test_output.md"), test_log)
+
+# Ensure images are available under docs/images for GitHub Pages
+images_src = "images"
+images_dst = os.path.join("docs", "images")
+os.makedirs(images_dst, exist_ok=True)
+if os.path.isdir(images_src):
+    for name in os.listdir(images_src):
+        src_path = os.path.join(images_src, name)
+        dst_path = os.path.join(images_dst, name)
+        try:
+            if os.path.isfile(src_path):
+                shutil.copy2(src_path, dst_path)
+        except Exception as e:
+            print(f"Warning: failed to copy {src_path} -> {dst_path}: {e}")
+
+# Auto-delete images older than 3 days from images/ and docs/images
+def cleanup_old_images(folder, days=3):
+    now = time.time()
+    cutoff = now - days * 86400
+    for fname in os.listdir(folder):
+        fpath = os.path.join(folder, fname)
+        if os.path.isfile(fpath):
+            try:
+                mtime = os.path.getmtime(fpath)
+                if mtime < cutoff:
+                    os.remove(fpath)
+            except Exception as e:
+                print(f"Warning: failed to delete {fpath}: {e}")
+cleanup_old_images("images", days=3)
+cleanup_old_images(os.path.join("docs", "images"), days=3)
