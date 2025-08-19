@@ -1,21 +1,21 @@
 # Test Results
 
-- **Test Loss**: 0.2496
-- **Test Accuracy**: 0.9297
+- **Test Loss**: 0.2468
+- **Test Accuracy**: 0.9302
 
 ## Sample Predictions
 
 | Image Index | True Label | Predicted Label |
 |-------------|------------|------------------|
-| 7485 | 0 | 0 |
-| 482 | 7 | 7 |
-| 7638 | 1 | 1 |
-| 3839 | 2 | 2 |
-| 8213 | 9 | 9 |
+| 7694 | 8 | 8 |
+| 5067 | 3 | 2 |
+| 3291 | 4 | 4 |
+| 1481 | 9 | 9 |
+| 3407 | 3 | 3 |
 
 ### Sample Images
-![Sample 5556](images/sample_5556_T4_P4.png) True: 4, Pred: 4
-![Sample 4413](images/sample_4413_T6_P6.png) True: 6, Pred: 6
-![Sample 2084](images/sample_2084_T4_P4.png) True: 4, Pred: 4
-![Sample 5950](images/sample_5950_T8_P8.png) True: 8, Pred: 8
-![Sample 7577](images/sample_7577_T5_P5.png) True: 5, Pred: 5
+![Sample 377](images/sample_377_T1_P1.png) True: 1, Pred: 1
+![Sample 5765](images/sample_5765_T8_P8.png) True: 8, Pred: 8
+![Sample 320](images/sample_320_T9_P7.png) True: 9, Pred: 7
+![Sample 8838](images/sample_8838_T2_P2.png) True: 2, Pred: 2
+![Sample 4501](images/sample_4501_T3_P3.png) True: 3, Pred: 3
