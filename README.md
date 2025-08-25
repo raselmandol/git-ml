@@ -47,7 +47,7 @@ git-ml/
 - **Loss Function:** Cross-entropy loss
 
 ### Training Configuration
-- **Epochs:** 10
+- **Epochs:** 15
 - **Batch Size:** 64
 - **Dataset:** MNIST (60k train, 10k test)
 - **Device:** Auto-detection (CUDA if available, else CPU)
