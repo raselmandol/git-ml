@@ -88,8 +88,10 @@ After training completes, check these files:
 
 3. **Enable GitHub Pages:**
    - Go to Settings → Pages
-   - Source: "GitHub Actions"
-   - The interactive demo will be available at `https://raselmandol.github.io/git-ml/`
+   - Build and deployment
+   - Deploy from a branch
+   - Branch: "/docs"
+   - The interactive demo will be available at `https://your-github-username.github.io/git-ml/`
 
 ### Automatic Training Schedule
 
@@ -126,7 +128,7 @@ Edit these files in the `docs/` folder:
 
 ### Test Results (`test_output.md`)
 
-- **Test Accuracy**: Performance on unseen data (~92.8%)
+- **Test Accuracy**: Performance on unseen data (~92.8%) (sample)
 - **Sample Predictions**: Visual examples with true vs predicted labels
 - **Sample Images**: MNIST digits with overlay predictions
 
