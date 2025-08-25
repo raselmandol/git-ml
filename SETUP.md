@@ -155,7 +155,7 @@ class Net(nn.Module):
 ### Training Parameters
 
 ```python
-EPOCHS = 10        # Number of training epochs
+EPOCHS = 15        # Number of training epochs
 BATCH_SIZE = 64    # Batch size for training
 LR = 0.01         # Learning rate
 ```
