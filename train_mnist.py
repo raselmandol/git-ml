@@ -6,7 +6,7 @@ from torch.utils.data import DataLoader
 from utils import save_markdown_log, predict_and_log_samples, save_training_graphs, save_test_samples_images, save_test_accuracy_image
 import os
 
-EPOCHS = 10
+EPOCHS = 15
 BATCH_SIZE = 64
 LR = 0.01
 
