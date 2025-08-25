@@ -36,6 +36,48 @@ def export_model_info():
     else:
         print("Warning: No trained model found, using random weights")
     
+    # --- Read actual metrics from markdown logs ---
+    def get_final_train_accuracy(path):
+        try:
+            with open(path, 'r') as f:
+                lines = f.readlines()
+            # Find last line with epoch data
+            for line in reversed(lines):
+                if '|' in line and not line.startswith('|---') and not line.startswith('#'):
+                    parts = line.strip().split('|')
+                    if len(parts) >= 4:
+                        acc = parts[3].strip()
+                        try:
+                            return float(acc)
+                        except Exception:
+                            pass
+            return None
+        except Exception:
+            return None
+
+    def get_test_metrics(path):
+        test_acc = None
+        test_loss = None
+        try:
+            with open(path, 'r') as f:
+                for line in f:
+                    if 'Test Accuracy' in line:
+                        try:
+                            test_acc = float(line.split(':')[-1].strip())
+                        except Exception:
+                            pass
+                    if 'Test Loss' in line:
+                        try:
+                            test_loss = float(line.split(':')[-1].strip())
+                        except Exception:
+                            pass
+            return test_acc, test_loss
+        except Exception:
+            return None, None
+
+    train_acc = get_final_train_accuracy('train_output.md')
+    test_acc, test_loss = get_test_metrics('test_output.md')
+
     # Export model information
     model_info = {
         'architecture': {
@@ -45,15 +87,16 @@ def export_model_info():
             'activation': 'ReLU'
         },
         'training_info': {
-            'epochs': 10,
+            'epochs': 15,
             'batch_size': 64,
             'learning_rate': 0.01,
             'optimizer': 'SGD',
             'loss_function': 'CrossEntropyLoss'
         },
         'performance': {
-            'train_accuracy': '~92.5%',
-            'test_accuracy': '~92.8%',
+            'train_accuracy': f'{train_acc:.4f}' if train_acc is not None else None,
+            'test_accuracy': f'{test_acc:.4f}' if test_acc is not None else None,
+            'test_loss': f'{test_loss:.4f}' if test_loss is not None else None,
             'training_time': '~3 minutes'
         }
     }

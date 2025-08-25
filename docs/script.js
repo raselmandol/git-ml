@@ -21,33 +21,48 @@ class TrainingDashboard {
 
     async init() {
         this.showLoading();
+        let outputs = null;
+        let trainMD = null;
+        let testMD = null;
+        let dataLoaded = false;
         try {
-            // Prefer outputs.txt for simplicity
-            let outputs = null;
+            // Try outputs.txt first
             try {
                 const text = await this.fetchText('outputs.txt');
                 outputs = this.parseKV(text);
-            } catch (_) {
-                // Fallback to markdowns
+            } catch (err) {
+                // Ignore missing outputs.txt
             }
 
-            if (outputs) {
-                this.applyOutputs(outputs);
-            } else {
-                const [trainMD, testMD] = await Promise.all([
+            // Always try to load markdowns
+            try {
+                [trainMD, testMD] = await Promise.all([
                     this.fetchText('train_output.md'),
                     this.fetchText('test_output.md'),
                 ]);
+            } catch (err) {
+                // If markdowns missing, fail
+                throw new Error('Missing training or test markdown');
+            }
+
+            // If outputs.txt present, use it for metrics and predictions
+            if (outputs) {
+                this.applyOutputs(outputs);
+                dataLoaded = true;
+            }
+            // Always parse markdowns for images and fallback metrics
+            if (trainMD && testMD) {
                 this.parseTraining(trainMD);
                 this.parseTest(testMD);
                 this.renderImagesFromMarkdown(testMD);
+                dataLoaded = true;
             }
 
             this.renderMetrics();
             this.renderCharts(outputs);
             if (this.statusBadge) {
-                this.statusBadge.textContent = 'Data Loaded';
-                this.statusBadge.classList.remove('error');
+                this.statusBadge.textContent = dataLoaded ? 'Data Loaded' : 'No Data';
+                this.statusBadge.classList.toggle('error', !dataLoaded);
             }
         } catch (err) {
             console.error('Init error:', err);

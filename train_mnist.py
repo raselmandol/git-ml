@@ -154,3 +154,12 @@ def prune_folder(folder: str, keep: set):
 
 prune_folder(images_src, fixed_names)
 prune_folder(images_dst, fixed_names)
+
+# --- Cleanup: Remove __pycache__ and MNIST/raw junk ---
+import shutil
+for folder in ["__pycache__", "pycache_", "data/MNIST/raw"]:
+    if os.path.isdir(folder):
+        try:
+            shutil.rmtree(folder)
+        except Exception:
+            pass
