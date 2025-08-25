@@ -22,15 +22,29 @@ class TrainingDashboard {
     async init() {
         this.showLoading();
         try {
-            const [trainMD, testMD] = await Promise.all([
-                this.fetchText('train_output.md'),
-                this.fetchText('test_output.md'),
-            ]);
-            this.parseTraining(trainMD);
-            this.parseTest(testMD);
+            // Prefer outputs.txt for simplicity
+            let outputs = null;
+            try {
+                const text = await this.fetchText('outputs.txt');
+                outputs = this.parseKV(text);
+            } catch (_) {
+                // Fallback to markdowns
+            }
+
+            if (outputs) {
+                this.applyOutputs(outputs);
+            } else {
+                const [trainMD, testMD] = await Promise.all([
+                    this.fetchText('train_output.md'),
+                    this.fetchText('test_output.md'),
+                ]);
+                this.parseTraining(trainMD);
+                this.parseTest(testMD);
+                this.renderImagesFromMarkdown(testMD);
+            }
+
             this.renderMetrics();
-            this.renderCharts();
-            this.renderImagesFromMarkdown(testMD);
+            this.renderCharts(outputs);
             if (this.statusBadge) {
                 this.statusBadge.textContent = 'Data Loaded';
                 this.statusBadge.classList.remove('error');
@@ -110,7 +124,7 @@ class TrainingDashboard {
         });
     }
 
-    renderCharts() {
+    renderCharts(outputs) {
         const ensureImg = (container, src, alt) => {
             if (!container) return;
             container.innerHTML = '';
@@ -121,11 +135,13 @@ class TrainingDashboard {
             img.onerror = () => { container.innerHTML = '<div class="chart-error">Chart not available</div>'; };
             container.appendChild(img);
         };
-        ensureImg(this.lossChart, 'images/train_loss.png', 'Training Loss');
-        ensureImg(this.accChart, 'images/train_accuracy.png', 'Training Accuracy');
+        const lossSrc = outputs?.train_loss_image || 'images/train_loss.png';
+        const accSrc = outputs?.train_accuracy_image || 'images/train_accuracy.png';
+        ensureImg(this.lossChart, lossSrc, 'Training Loss');
+        ensureImg(this.accChart, accSrc, 'Training Accuracy');
         // Optional: render test accuracy image above images grid
         const testAccImg = document.createElement('img');
-        testAccImg.src = 'images/test_accuracy.png';
+        testAccImg.src = outputs?.test_accuracy_image || 'images/test_accuracy.png';
         testAccImg.alt = 'Test Accuracy';
         testAccImg.className = 'chart-image';
         testAccImg.style.maxWidth = '320px';
@@ -133,6 +149,54 @@ class TrainingDashboard {
         const section = document.querySelector('.sample-images h2');
         if (section && section.parentElement) {
             section.parentElement.insertBefore(testAccImg, section.nextSibling);
+        }
+    }
+
+    parseKV(text) {
+        const lines = text.split('\n');
+        const kv = {};
+        for (const line of lines) {
+            const idx = line.indexOf('=');
+            if (idx > 0) {
+                const k = line.slice(0, idx).trim();
+                const v = line.slice(idx + 1).trim();
+                kv[k] = v;
+            }
+        }
+        return kv;
+    }
+
+    applyOutputs(kv) {
+        const num = x => (x === undefined || x === '' ? null : parseFloat(x));
+        this.state.totalEpochs = kv.total_epochs ? parseInt(kv.total_epochs, 10) : null;
+        this.state.finalTrainAccuracy = num(kv.final_train_accuracy);
+        this.state.testAccuracy = num(kv.test_accuracy);
+        this.state.testLoss = num(kv.test_loss);
+
+        // Render predictions stub if we have per-sample labels
+        const preds = [];
+        for (let i = 1; i <= 8; i++) {
+            const t = kv[`sample_${String(i).padStart(2, '0')}_true`];
+            const p = kv[`sample_${String(i).padStart(2, '0')}_pred`];
+            if (t !== undefined && p !== undefined) {
+                const ti = parseInt(t, 10);
+                const pi = parseInt(p, 10);
+                preds.push({ index: i, true_label: ti, predicted_label: pi, correct: ti === pi });
+            }
+        }
+        if (preds.length) this.renderPredictions(preds);
+
+        // Render sample images directly if provided
+        const grid = this.imagesGrid;
+        if (grid && kv.sample_images) {
+            grid.innerHTML = '';
+            const parts = kv.sample_images.split(',').map(s => s.trim()).filter(Boolean);
+            parts.forEach((src, idx) => {
+                const card = document.createElement('div');
+                card.className = 'image-card';
+                card.innerHTML = `<img src="${src}" alt="sample"><div class="image-caption">Sample ${String(idx+1).padStart(2,'0')}</div>`;
+                grid.appendChild(card);
+            });
         }
     }
 

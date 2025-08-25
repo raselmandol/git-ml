@@ -108,7 +108,7 @@ The automated pipeline generates comprehensive training reports with interactive
 The model is thoroughly evaluated on the test set, with sample predictions displayed:
 
 **Sample MNIST Predictions:**
-![Sample 1727](images/sample_1727_T3_P3.png) ![Sample 411](images/sample_411_T7_P7.png) ![Sample 2230](images/sample_2230_T3_P3.png)
+![Sample 01](images/sample_01.png) ![Sample 02](images/sample_02.png) ![Sample 03](images/sample_03.png)
 
 *True labels vs Predicted labels are shown for each sample*
 
