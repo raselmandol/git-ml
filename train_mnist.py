@@ -3,7 +3,7 @@ import torch.nn as nn
 import torch.optim as optim
 from torchvision import datasets, transforms
 from torch.utils.data import DataLoader
-from utils import save_markdown_log, predict_and_log_samples, save_training_graphs, save_test_samples_images
+from utils import save_markdown_log, predict_and_log_samples, save_training_graphs, save_test_samples_images, save_test_accuracy_image
 import os
 
 EPOCHS = 10
@@ -110,9 +110,14 @@ test_log += "|-------------|------------|------------------|\n"
 test_log += predict_and_log_samples(model, test_loader, device)
 sample_imgs = save_test_samples_images(model, test_loader, device, out_dir="images", num_samples=5)
 test_log += "\n### Sample Images\n"
-for idx, label, pred, img_path in sample_imgs:
+for i, (idx, label, pred, img_path) in enumerate(sample_imgs, start=1):
     img_name = os.path.basename(img_path)
-    test_log += f"![Sample {idx}](images/{img_name}) True: {label}, Pred: {pred}\n"
+    test_log += f"![Sample {i:02d}](images/{img_name}) True: {label}, Pred: {pred}\n"
+
+# Add a test accuracy image that always overwrites
+save_test_accuracy_image(test_accuracy, out_dir="images")
+test_log += "\n## Test Accuracy Visual\n"
+test_log += "![Test Accuracy](images/test_accuracy.png)\n"
 save_markdown_log("test_output.md", test_log)
 # Mirror test log into docs/
 save_markdown_log(os.path.join("docs", "test_output.md"), test_log)
@@ -131,18 +136,21 @@ if os.path.isdir(images_src):
         except Exception as e:
             print(f"Warning: failed to copy {src_path} -> {dst_path}: {e}")
 
-# Auto-delete images older than 3 days from images/ and docs/images
-def cleanup_old_images(folder, days=3):
-    now = time.time()
-    cutoff = now - days * 86400
-    for fname in os.listdir(folder):
-        fpath = os.path.join(folder, fname)
-        if os.path.isfile(fpath):
-            try:
-                mtime = os.path.getmtime(fpath)
-                if mtime < cutoff:
+# Overwrite strategy: keep only fixed-named images to avoid bloat
+fixed_names = {"train_loss.png", "train_accuracy.png", "test_accuracy.png"}
+fixed_names.update({f"sample_{i:02d}.png" for i in range(1, 6)})
+
+def prune_folder(folder: str, keep: set):
+    try:
+        for fname in os.listdir(folder):
+            fpath = os.path.join(folder, fname)
+            if os.path.isfile(fpath) and fname not in keep:
+                try:
                     os.remove(fpath)
-            except Exception as e:
-                print(f"Warning: failed to delete {fpath}: {e}")
-cleanup_old_images("images", days=3)
-cleanup_old_images(os.path.join("docs", "images"), days=3)
+                except Exception as e:
+                    print(f"Warning: failed to delete {fpath}: {e}")
+    except FileNotFoundError:
+        pass
+
+prune_folder(images_src, fixed_names)
+prune_folder(images_dst, fixed_names)
