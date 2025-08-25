@@ -1,4 +1,4 @@
-# MNIST Training & Testing Automation  MNIST Training & Testing Automation
+# MNIST Training & Testing Automation
 
 [![Training Pipeline](https://github.com/raselmandol/git-ml/actions/workflows/train_mnist.yml/badge.svg)](https://github.com/raselmandol/git-ml/actions/workflows/train_mnist.yml)
 [![GitHub Pages](https://github.com/raselmandol/git-ml/actions/workflows/pages/pages-build-deployment/badge.svg)](https://raselmandol.github.io/git-ml/)
