@@ -67,10 +67,10 @@ class TrainingDashboard {
         } catch (err) {
             console.error('Init error:', err);
             this.failBadge('Data Load Error');
-        } finally {
-            this.hideLoading();
-            this.startAutoRefresh();
         }
+        // Always hide preloader after attempting to load data
+        this.hideLoading();
+        this.startAutoRefresh();
     }
 
     async fetchText(path) {
