@@ -68,8 +68,10 @@ class TrainingDashboard {
             console.error('Init error:', err);
             this.failBadge('Data Load Error');
         }
-        // Always hide preloader after attempting to load data
-        this.hideLoading();
+            // Always hide preloader after 3 seconds, regardless of data loading
+            setTimeout(() => {
+                this.hideLoading();
+            }, 3000);
         this.startAutoRefresh();
     }
 

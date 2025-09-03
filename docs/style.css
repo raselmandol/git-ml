@@ -79,6 +79,14 @@ body {
   border-radius: 8px;
   background: #f7f7f7;
 }
+/* Make test accuracy image more compact and visually balanced */
+.chart-image {
+  max-width: 220px;
+  max-height: 140px;
+  object-fit: contain;
+  margin: 0 auto;
+  display: block;
+}
 .predictions-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
