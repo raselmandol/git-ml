@@ -11,7 +11,7 @@ Before getting started, make sure you have:
 - **A GitHub account** (for automated training and hosting)
 - **Basic command line knowledge**
 
-## Quick Setup (5 minutes)tup Guide
+## Quick Setup (5 minutes) Guide
 
 This guide will walk you through setting up the MNIST training pipeline and interactive demo from scratch.
 
