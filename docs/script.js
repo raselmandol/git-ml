@@ -21,57 +21,55 @@ class TrainingDashboard {
 
     async init() {
         this.showLoading();
-        let outputs = null;
         let trainMD = null;
         let testMD = null;
-        let dataLoaded = false;
+        let lastUpdated = 'Loading...';
         try {
-            // Try outputs.txt first
-            try {
-                const text = await this.fetchText('outputs.txt');
-                outputs = this.parseKV(text);
-            } catch (err) {
-                // Ignore missing outputs.txt
+            // Always load markdowns for metrics and images
+            [trainMD, testMD] = await Promise.all([
+                this.fetchText('train_output.md'),
+                this.fetchText('test_output.md'),
+            ]);
+            // Get last modified time from markdown files
+            const trainRes = await fetch('train_output.md', { method: 'HEAD' });
+            const testRes = await fetch('test_output.md', { method: 'HEAD' });
+            let trainDate = trainRes.headers.get('last-modified');
+            let testDate = testRes.headers.get('last-modified');
+            if (trainDate || testDate) {
+                // Use the most recent
+                const d1 = trainDate ? new Date(trainDate) : null;
+                const d2 = testDate ? new Date(testDate) : null;
+                let latest = d1 && d2 ? (d1 > d2 ? d1 : d2) : (d1 || d2);
+                if (latest) {
+                    lastUpdated = latest.toLocaleString();
+                }
             }
 
-            // Always try to load markdowns
-            try {
-                [trainMD, testMD] = await Promise.all([
-                    this.fetchText('train_output.md'),
-                    this.fetchText('test_output.md'),
-                ]);
-            } catch (err) {
-                // If markdowns missing, fail
-                throw new Error('Missing training or test markdown');
-            }
-
-            // If outputs.txt present, use it for metrics and predictions
-            if (outputs) {
-                this.applyOutputs(outputs);
-                dataLoaded = true;
-            }
-            // Always parse markdowns for images and fallback metrics
-            if (trainMD && testMD) {
-                this.parseTraining(trainMD);
-                this.parseTest(testMD);
-                this.renderImagesFromMarkdown(testMD);
-                dataLoaded = true;
-            }
+            // Parse markdowns for metrics and images
+            this.parseTraining(trainMD);
+            this.parseTest(testMD);
+            this.renderImagesFromMarkdown(testMD);
 
             this.renderMetrics();
-            this.renderCharts(outputs);
+            // Render charts from static image paths
+            this.renderCharts();
             if (this.statusBadge) {
-                this.statusBadge.textContent = dataLoaded ? 'Data Loaded' : 'No Data';
-                this.statusBadge.classList.toggle('error', !dataLoaded);
+                this.statusBadge.textContent = 'Data Loaded';
+                this.statusBadge.classList.remove('error');
+            }
+            // Update last updated in footer
+            const footerText = document.querySelector('.footer-text');
+            if (footerText) {
+                footerText.textContent = `Last updated: ${lastUpdated}`;
             }
         } catch (err) {
             console.error('Init error:', err);
             this.failBadge('Data Load Error');
         }
-            // Always hide preloader after 3 seconds, regardless of data loading
-            setTimeout(() => {
-                this.hideLoading();
-            }, 3000);
+        // Always hide preloader after 1.2 seconds, regardless of data loading
+        setTimeout(() => {
+            this.hideLoading();
+        }, 1200);
         this.startAutoRefresh();
     }
 
@@ -152,13 +150,12 @@ class TrainingDashboard {
             img.onerror = () => { container.innerHTML = '<div class="chart-error">Chart not available</div>'; };
             container.appendChild(img);
         };
-        const lossSrc = outputs?.train_loss_image || 'images/train_loss.png';
-        const accSrc = outputs?.train_accuracy_image || 'images/train_accuracy.png';
-        ensureImg(this.lossChart, lossSrc, 'Training Loss');
-        ensureImg(this.accChart, accSrc, 'Training Accuracy');
+        // Always use static image paths
+        ensureImg(this.lossChart, 'images/train_loss.png', 'Training Loss');
+        ensureImg(this.accChart, 'images/train_accuracy.png', 'Training Accuracy');
         // Optional: render test accuracy image above images grid
         const testAccImg = document.createElement('img');
-        testAccImg.src = outputs?.test_accuracy_image || 'images/test_accuracy.png';
+        testAccImg.src = 'images/test_accuracy.png';
         testAccImg.alt = 'Test Accuracy';
         testAccImg.className = 'chart-image';
         testAccImg.style.maxWidth = '320px';
