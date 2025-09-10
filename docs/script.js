@@ -90,10 +90,10 @@ class TrainingDashboard {
         const rows = lines.filter(l => l.includes('|') && !l.includes('---') && !/^#/.test(l.trim()) && !/Epoch\s*\|/i.test(l));
         this.state.totalEpochs = rows.length || null;
         if (rows.length) {
-            const last = rows[rows.length - 1].split('|').map(s => s.trim()).filter(Boolean);
-            if (last.length >= 3) {
-                const acc = parseFloat(last[2]);
-                if (!Number.isNaN(acc)) this.state.finalTrainAccuracy = acc;
+            const last = rows[rows.length - 1].split('|').map(s => s.trim());
+            // Accuracy is column 3 (index 3)
+            if (last.length >= 4 && !isNaN(parseFloat(last[3]))) {
+                this.state.finalTrainAccuracy = parseFloat(last[3]);
             }
         }
     }
@@ -240,7 +240,8 @@ class TrainingDashboard {
         const grid = this.imagesGrid;
         if (!grid) return;
         grid.innerHTML = '';
-        const imgLines = md.split('\n').filter(l => /!\[[^\]]*\]\((images\/[^)]+)\)/.test(l));
+        // Limit to 5 images only
+        const imgLines = md.split('\n').filter(l => /!\[[^\]]*\]\((images\/[^)]+)\)/.test(l)).slice(0, 5);
         if (imgLines.length === 0) {
             grid.innerHTML = '<div class="no-data">No images listed</div>';
             return;
@@ -260,11 +261,76 @@ class TrainingDashboard {
         });
     }
 
-    startAutoRefresh() {
-        setInterval(() => this.init(), 300000); // 5 minutes
+    async init() {
+        let lastUpdated = 'Loading...';
+        try {
+            // Try outputs.txt first
+            try {
+                const text = await this.fetchText('outputs.txt');
+                outputs = this.parseKV(text);
+            } catch (err) {
+                // Ignore missing outputs.txt
+            }
+
+            // Always try to load markdowns
+            try {
+                [trainMD, testMD] = await Promise.all([
+                    this.fetchText('train_output.md'),
+                    this.fetchText('test_output.md'),
+                ]);
+                // Get last modified time from markdown files
+                const trainRes = await fetch('train_output.md', { method: 'HEAD' });
+                const testRes = await fetch('test_output.md', { method: 'HEAD' });
+                let trainDate = trainRes.headers.get('last-modified');
+                let testDate = testRes.headers.get('last-modified');
+                if (trainDate || testDate) {
+                    // Use the most recent
+                    const d1 = trainDate ? new Date(trainDate) : null;
+                    const d2 = testDate ? new Date(testDate) : null;
+                    let latest = d1 && d2 ? (d1 > d2 ? d1 : d2) : (d1 || d2);
+                    if (latest) {
+                        lastUpdated = latest.toLocaleString();
+                    }
+                }
+            } catch (err) {
+                // If markdowns missing, fail
+                throw new Error('Missing training or test markdown');
+            }
+
+            // If outputs.txt present, use it for metrics and predictions
+            if (outputs) {
+                this.applyOutputs(outputs);
+                dataLoaded = true;
+            }
+            // Always parse markdowns for images and fallback metrics
+            if (trainMD && testMD) {
+                this.parseTraining(trainMD);
+                this.parseTest(testMD);
+                this.renderImagesFromMarkdown(testMD);
+                dataLoaded = true;
+            }
+
+            this.renderMetrics();
+            this.renderCharts(outputs);
+            if (this.statusBadge) {
+                this.statusBadge.textContent = dataLoaded ? 'Data Loaded' : 'No Data';
+                this.statusBadge.classList.toggle('error', !dataLoaded);
+            }
+            // Update last updated in footer
+            const footerText = document.querySelector('.footer-text');
+            if (footerText) {
+                footerText.textContent = `Last updated: ${lastUpdated}`;
+            }
+        } catch (err) {
+            console.error('Init error:', err);
+            this.failBadge('Data Load Error');
+        }
+        // Always hide preloader after 1.2 seconds, regardless of data loading
+        setTimeout(() => {
+            this.hideLoading();
+        }, 1200);
+        this.startAutoRefresh();
     }
+
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-    new TrainingDashboard();
-});
