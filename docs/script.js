@@ -158,7 +158,7 @@ class TrainingDashboard {
         ensureImg(this.accChart, accSrc, 'Training Accuracy');
         // Optional: render test accuracy image above images grid
         const testAccImg = document.createElement('img');
-        testAccImg.src = outputs?.test_accuracy_image || 'images/test_accuracy.png';
+        testAccImg.src = outputs?.test_accuracy_image || 'images/train_accuracy.png';
         testAccImg.alt = 'Test Accuracy';
         testAccImg.className = 'chart-image';
         testAccImg.style.maxWidth = '320px';
