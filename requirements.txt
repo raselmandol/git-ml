@@ -3,3 +3,4 @@ torchvision
 matplotlib
 onnx
 onnxruntime
+onnxscript
