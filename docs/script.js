@@ -7,15 +7,21 @@ class TrainingDashboard {
         this.metricsGrid = document.querySelector('.metrics-grid');
         this.lossChart = document.getElementById('lossChart');
         this.accChart = document.getElementById('accuracyChart');
+        this.testChart = document.getElementById('testAccuracyChart');
         this.predictionsGrid = document.getElementById('predictionsGrid');
         this.imagesGrid = document.getElementById('imagesGrid');
         this.statusBadge = document.getElementById('trainingStatus');
+        this.lastUpdateElem = document.getElementById('lastUpdate');
         this.state = {
             testAccuracy: null,
             testLoss: null,
             totalEpochs: null,
             finalTrainAccuracy: null,
         };
+        this.predictionData = [];
+        this.maxSampleImages = 5;
+        this.refreshTimer = null;
+        this.refreshIntervalMs = 300000; // 5 minutes
         this.init();
     }
 
@@ -64,9 +70,11 @@ class TrainingDashboard {
                 this.statusBadge.textContent = dataLoaded ? 'Data Loaded' : 'No Data';
                 this.statusBadge.classList.toggle('error', !dataLoaded);
             }
+            this.updateLastUpdateTime();
         } catch (err) {
             console.error('Init error:', err);
             this.failBadge('Data Load Error');
+            this.setLastUpdateFallback();
         }
             // Always hide preloader after 3 seconds, regardless of data loading
             setTimeout(() => {
@@ -106,15 +114,20 @@ class TrainingDashboard {
 
         // predictions table
         const lines = md.split('\n');
-        const predRows = lines.filter(line => /^\|\s*\d+\s*\|\s*\d+\s*\|\s*\d+\s*\|/i.test(line)).slice(0, 8);
-        const preds = predRows.map(r => {
-            const cells = r.split('|').map(c => c.trim()).filter(Boolean);
-            const idx = parseInt(cells[0], 10);
-            const t = parseInt(cells[1], 10);
-            const p = parseInt(cells[2], 10);
-            return { index: idx, true_label: t, predicted_label: p, correct: t === p };
+        const preds = [];
+        lines.forEach(line => {
+            const match = line.match(/^\|\s*(\d+)\s*\|\s*(\d+)\s*\|\s*(\d+)\s*\|/);
+            if (match) {
+                const idx = parseInt(match[1], 10);
+                const t = parseInt(match[2], 10);
+                const p = parseInt(match[3], 10);
+                preds.push({ index: idx, true_label: t, predicted_label: p, correct: t === p });
+            }
         });
-        this.renderPredictions(preds);
+        if (preds.length) {
+            this.predictionData = preds;
+            this.renderPredictions(preds);
+        }
     }
 
     renderMetrics() {
@@ -154,19 +167,10 @@ class TrainingDashboard {
         };
         const lossSrc = outputs?.train_loss_image || 'images/train_loss.png';
         const accSrc = outputs?.train_accuracy_image || 'images/train_accuracy.png';
+        const testSrc = outputs?.test_accuracy_image || 'images/test_accuracy.png';
         ensureImg(this.lossChart, lossSrc, 'Training Loss');
         ensureImg(this.accChart, accSrc, 'Training Accuracy');
-        // Optional: render test accuracy image above images grid
-        const testAccImg = document.createElement('img');
-        testAccImg.src = outputs?.test_accuracy_image || 'images/train_accuracy.png';
-        testAccImg.alt = 'Test Accuracy';
-        testAccImg.className = 'chart-image';
-        testAccImg.style.maxWidth = '320px';
-        testAccImg.onerror = () => { testAccImg.remove(); };
-        const section = document.querySelector('.sample-images h2');
-        if (section && section.parentElement) {
-            section.parentElement.insertBefore(testAccImg, section.nextSibling);
-        }
+        ensureImg(this.testChart, testSrc, 'Test Accuracy');
     }
 
     parseKV(text) {
@@ -201,7 +205,10 @@ class TrainingDashboard {
                 preds.push({ index: i, true_label: ti, predicted_label: pi, correct: ti === pi });
             }
         }
-        if (preds.length) this.renderPredictions(preds);
+        if (preds.length) {
+            this.predictionData = preds;
+            this.renderPredictions(preds);
+        }
 
         // Render sample images directly if provided
         const grid = this.imagesGrid;
@@ -220,17 +227,24 @@ class TrainingDashboard {
     renderPredictions(preds) {
         const grid = this.predictionsGrid;
         if (!grid) return;
+        const data = preds && preds.length ? preds : this.predictionData;
         grid.innerHTML = '';
-        if (!preds || preds.length === 0) {
+        if (!data || data.length === 0) {
             grid.innerHTML = '<div class="no-data">No prediction data available</div>';
             return;
         }
-        preds.forEach(pred => {
+        data.slice(0, 8).forEach(pred => {
             const div = document.createElement('div');
             div.className = `prediction-item ${pred.correct ? 'correct' : 'incorrect'}`;
             div.innerHTML = `
-                <div class="prediction-digit">${pred.predicted_label}</div>
-                <div class="prediction-labels">True: ${pred.true_label}<br>${pred.correct ? 'Correct' : 'Wrong'}</div>
+                <div class="prediction-header">
+                    <span class="prediction-id">#${pred.index}</span>
+                    <span class="prediction-status">${pred.correct ? 'Correct' : 'Wrong'}</span>
+                </div>
+                <div class="prediction-body">
+                    <span class="prediction-true">True: ${pred.true_label}</span>
+                    <span class="prediction-pred">Pred: ${pred.predicted_label}</span>
+                </div>
             `;
             grid.appendChild(div);
         });
@@ -245,23 +259,54 @@ class TrainingDashboard {
             grid.innerHTML = '<div class="no-data">No images listed</div>';
             return;
         }
-        imgLines.forEach(line => {
-            const match = line.match(/!\[[^\]]*\]\((images\/[^)]+)\).*True:\s*(\d)[^\d]+Pred:\s*(\d)/i);
+        imgLines.slice(0, this.maxSampleImages).forEach(line => {
+            const match = line.match(/!\[[^\]]*\]\((images\/[^)]+)\).*True:\s*(\d+)\D+Pred:\s*(\d+)/i);
             const src = match ? match[1] : null;
             const t = match ? parseInt(match[2], 10) : null;
             const p = match ? parseInt(match[3], 10) : null;
+            const trueLabel = Number.isInteger(t) ? t : '—';
+            const predLabel = Number.isInteger(p) ? p : '—';
             const card = document.createElement('div');
             card.className = 'image-card';
             card.innerHTML = src ? `
                 <img src="${src}" alt="sample" onerror="this.replaceWith(document.createTextNode('Image missing'))">
-                <div class="image-caption">True: ${t} · Pred: ${p}</div>
+                <div class="image-caption">True: ${trueLabel} · Pred: ${predLabel}</div>
             ` : '<div class="image-caption">Image reference invalid</div>';
             grid.appendChild(card);
         });
     }
 
     startAutoRefresh() {
-        setInterval(() => this.init(), 300000); // 5 minutes
+        if (this.refreshTimer) return;
+        this.refreshTimer = setInterval(() => this.init(), this.refreshIntervalMs);
+    }
+
+    async updateLastUpdateTime() {
+        if (!this.lastUpdateElem) return;
+        try {
+            const resp = await fetch('train_output.md', { method: 'HEAD', cache: 'no-store' });
+            if (!resp.ok) throw new Error('Failed to fetch headers');
+            const lastMod = resp.headers.get('last-modified');
+            if (lastMod) {
+                const date = new Date(lastMod);
+                if (!Number.isNaN(date.getTime())) {
+                    this.lastUpdateElem.textContent = date.toLocaleString(undefined, {
+                        dateStyle: 'medium',
+                        timeStyle: 'short',
+                    });
+                    return;
+                }
+            }
+            this.setLastUpdateFallback();
+        } catch (err) {
+            console.warn('Last update fetch failed', err);
+            this.setLastUpdateFallback();
+        }
+    }
+
+    setLastUpdateFallback() {
+        if (!this.lastUpdateElem) return;
+        this.lastUpdateElem.textContent = 'Unavailable';
     }
 }
 
