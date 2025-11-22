@@ -7,7 +7,6 @@ class TrainingDashboard {
         this.metricsGrid = document.querySelector('.metrics-grid');
         this.lossChart = document.getElementById('lossChart');
         this.accChart = document.getElementById('accuracyChart');
-        this.testChart = document.getElementById('testAccuracyChart');
         this.predictionsGrid = document.getElementById('predictionsGrid');
         this.imagesGrid = document.getElementById('imagesGrid');
         this.statusBadge = document.getElementById('trainingStatus');
@@ -167,10 +166,8 @@ class TrainingDashboard {
         };
         const lossSrc = outputs?.train_loss_image || 'images/train_loss.png';
         const accSrc = outputs?.train_accuracy_image || 'images/train_accuracy.png';
-        const testSrc = outputs?.test_accuracy_image || 'images/test_accuracy.png';
         ensureImg(this.lossChart, lossSrc, 'Training Loss');
         ensureImg(this.accChart, accSrc, 'Training Accuracy');
-        ensureImg(this.testChart, testSrc, 'Test Accuracy');
     }
 
     parseKV(text) {
@@ -189,10 +186,10 @@ class TrainingDashboard {
 
     applyOutputs(kv) {
         const num = x => (x === undefined || x === '' ? null : parseFloat(x));
-        this.state.totalEpochs = kv.total_epochs ? parseInt(kv.total_epochs, 10) : null;
-        this.state.finalTrainAccuracy = num(kv.final_train_accuracy);
-        this.state.testAccuracy = num(kv.test_accuracy);
-        this.state.testLoss = num(kv.test_loss);
+        if (kv.total_epochs) this.state.totalEpochs = parseInt(kv.total_epochs, 10);
+        if (kv.final_train_accuracy !== undefined) this.state.finalTrainAccuracy = num(kv.final_train_accuracy);
+        if (kv.test_accuracy !== undefined) this.state.testAccuracy = num(kv.test_accuracy);
+        if (kv.test_loss !== undefined) this.state.testLoss = num(kv.test_loss);
 
         // Render predictions stub if we have per-sample labels
         const preds = [];
