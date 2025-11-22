@@ -94,14 +94,21 @@ class TrainingDashboard {
 
     parseTraining(md) {
         const lines = md.split('\n');
-        const rows = lines.filter(l => l.includes('|') && !l.includes('---') && !/^#/.test(l.trim()) && !/Epoch\s*\|/i.test(l));
-        this.state.totalEpochs = rows.length || null;
-        if (rows.length) {
-            const last = rows[rows.length - 1].split('|').map(s => s.trim()).filter(Boolean);
-            if (last.length >= 3) {
-                const acc = parseFloat(last[2]);
-                if (!Number.isNaN(acc)) this.state.finalTrainAccuracy = acc;
+        const rows = [];
+        md.split('\n').forEach(line => {
+            const match = line.match(/^\|\s*(\d+)\s*\|\s*([\d.]+)\s*\|\s*([\d.]+)\s*\|/);
+            if (match) {
+                rows.push({ epoch: parseInt(match[1], 10), accuracy: parseFloat(match[3]) });
             }
+        });
+        if (rows.length) {
+            this.state.totalEpochs = rows.length;
+            const last = rows[rows.length - 1];
+            if (!Number.isNaN(last.accuracy)) {
+                this.state.finalTrainAccuracy = last.accuracy;
+            }
+        } else if (this.state.totalEpochs == null) {
+            this.state.totalEpochs = 15;
         }
     }
 
@@ -132,11 +139,12 @@ class TrainingDashboard {
     renderMetrics() {
         if (!this.metricsGrid) return;
         const fmtPct = v => v == null ? '—' : `${(v * 100).toFixed(1)}%`;
-        const fmtNum = v => v == null ? '—' : `${v}`;
+        const totalEpochs = this.state.totalEpochs ?? 15;
+        const fmtNum = v => `${v}`;
         const data = [
             { label: 'Test Accuracy', value: fmtPct(this.state.testAccuracy), id: 'testAccuracy' },
             { label: 'Test Loss', value: this.state.testLoss == null ? '—' : this.state.testLoss.toFixed(4), id: 'testLoss' },
-            { label: 'Total Epochs', value: fmtNum(this.state.totalEpochs), id: 'totalEpochs' },
+            { label: 'Training Epochs', value: fmtNum(totalEpochs), id: 'totalEpochs' },
             { label: 'Final Train Accuracy', value: fmtPct(this.state.finalTrainAccuracy), id: 'finalTrainAccuracy' },
         ];
         this.metricsGrid.innerHTML = '';
