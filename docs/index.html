@@ -9,104 +9,134 @@
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>ML</text></svg>">
 </head>
 <body>
-    <div class="container">
-        <!-- Header -->
-        <header class="header">
-            <div class="header-content">
+    <div class="app-shell">
+        <header class="hero">
+            <div class="hero-intro">
+                <p class="eyebrow">MNIST Automation · PyTorch + GitHub Actions</p>
                 <h1>MNIST Training Dashboard</h1>
-                <p>Live metrics and results from the latest automated training run.</p>
-                <div class="badges">
-                    <span class="badge status" id="trainingStatus">Loading...</span>
-                    <span class="badge model">PyTorch + ONNX</span>
+                <p class="hero-copy">Up-to-the-minute metrics, predictions, and visual evidence from the scheduled training pipeline.</p>
+                <div class="hero-badges">
                     <span class="badge automation">GitHub Actions</span>
+                    <span class="badge model">PyTorch · ONNX</span>
+                    <span class="badge dataset">MNIST</span>
+                </div>
+            </div>
+            <div class="hero-meta">
+                <div class="meta-card">
+                    <span class="meta-label">Last Updated</span>
+                    <span class="meta-value" id="lastUpdate">Loading...</span>
+                </div>
+                <div class="meta-card status-card">
+                    <span class="meta-label">Pipeline Status</span>
+                    <span class="meta-value" id="trainingStatus">Loading...</span>
                 </div>
             </div>
         </header>
 
-        <!-- Main Content -->
-        <main class="main">
-            <!-- Performance Overview -->
-            <section class="performance-overview">
-                <h2>Model Performance</h2>
+        <main class="content">
+            <section class="section-card metrics-section">
+                <div class="section-header">
+                    <div>
+                        <h2>Model Snapshot</h2>
+                        <p>Key metrics captured at the end of the latest automated run.</p>
+                    </div>
+                </div>
                 <div class="metrics-grid">
                     <div class="metric-card">
-                        <div class="metric-content">
-                            <h3>Test Accuracy</h3>
-                            <div class="metric-value" id="testAccuracy">Loading...</div>
-                        </div>
+                        <div class="metric-label">Test Accuracy</div>
+                        <div class="metric-value" id="testAccuracy">Loading...</div>
                     </div>
                     <div class="metric-card">
-                        <div class="metric-content">
-                            <h3>Test Loss</h3>
-                            <div class="metric-value" id="testLoss">Loading...</div>
-                        </div>
+                        <div class="metric-label">Test Loss</div>
+                        <div class="metric-value" id="testLoss">Loading...</div>
                     </div>
                     <div class="metric-card">
-                        <div class="metric-content">
-                            <h3>Training Epochs</h3>
-                            <div class="metric-value" id="totalEpochs">Loading...</div>
-                        </div>
+                        <div class="metric-label">Training Epochs</div>
+                        <div class="metric-value" id="totalEpochs">Loading...</div>
                     </div>
                     <div class="metric-card">
-                        <div class="metric-content">
-                            <h3>Final Training Accuracy</h3>
-                            <div class="metric-value" id="finalTrainAccuracy">Loading...</div>
-                        </div>
+                        <div class="metric-label">Final Train Accuracy</div>
+                        <div class="metric-value" id="finalTrainAccuracy">Loading...</div>
                     </div>
                 </div>
             </section>
 
-            <!-- Training Progress -->
-            <section class="training-progress">
-                <h2>Training Progress</h2>
-                <div class="progress-container">
-                    <div class="chart-wrapper">
-                        <h3>Training Loss</h3>
-                        <div class="chart-container" id="lossChart">
-                            <img src="images/train_loss.png" alt="Training Loss" class="chart-image" onerror="this.parentElement.innerHTML='<div class=chart-error>Chart not available</div>'">
-                        </div>
+            <section class="section-card charts-section">
+                <div class="section-header">
+                    <div>
+                        <h2>Training Progress</h2>
+                        <p>Visual summary of optimization dynamics for the current checkpoint.</p>
                     </div>
-                    <div class="chart-wrapper">
-                        <h3>Training Accuracy</h3>
-                        <div class="chart-container" id="accuracyChart">
-                            <img src="images/train_accuracy.png" alt="Training Accuracy" class="chart-image" onerror="this.parentElement.innerHTML='<div class=chart-error>Chart not available</div>'">
-                        </div>
+                </div>
+                <div class="chart-grid">
+                    <div class="chart-card">
+                        <div class="chart-title">Training Loss</div>
+                        <div class="chart-container" id="lossChart"></div>
+                    </div>
+                    <div class="chart-card">
+                        <div class="chart-title">Training Accuracy</div>
+                        <div class="chart-container" id="accuracyChart"></div>
+                    </div>
+                    <div class="chart-card">
+                        <div class="chart-title">Test Accuracy</div>
+                        <div class="chart-container" id="testAccuracyChart"></div>
                     </div>
                 </div>
             </section>
 
-            <!-- Test Results -->
-            <section class="test-results">
-                <h2>Sample Predictions</h2>
-                <div class="sample-predictions">
-                    <div class="predictions-grid" id="predictionsGrid">
-                        <!-- Populated dynamically from test_output.md -->
+            <section class="section-card predictions-section">
+                <div class="section-header">
+                    <div>
+                        <h2>Sample Predictions</h2>
+                        <p>Random test-set picks comparing ground truth and model decisions.</p>
                     </div>
+                </div>
+                <div class="predictions-grid" id="predictionsGrid">
+                    <!-- Populated dynamically -->
                 </div>
             </section>
 
-            <!-- Sample Images -->
-            <section class="sample-images">
-                <h2>Training Accuracy and Test Images</h2>
+            <section class="section-card images-section">
+                <div class="section-header">
+                    <div>
+                        <h2>Test Images</h2>
+                        <p>Latest five samples exported with overlays for quick visual validation.</p>
+                    </div>
+                </div>
                 <div class="images-grid" id="imagesGrid">
-                    <!-- Populated dynamically from test_output.md -->
+                    <!-- Populated dynamically -->
                 </div>
             </section>
 
-            <!-- Footer -->
-            <footer class="footer">
-                <div class="footer-content">
-                    <div class="footer-links">
-                        <a href="https://github.com/raselmandol/git-ml" target="_blank" class="footer-link">Source Code</a>
-                        <a href="https://github.com/raselmandol/git-ml/blob/main/train_output.md" target="_blank" class="footer-link">Training Logs</a>
-                        <a href="https://github.com/raselmandol/git-ml/blob/main/test_output.md" target="_blank" class="footer-link">Test Results</a>
-                        <a href="https://github.com/raselmandol/git-ml/actions" target="_blank" class="footer-link">Actions</a>
+            <section class="section-card resources-section">
+                <div class="section-header">
+                    <div>
+                        <h2>Pipeline Resources</h2>
+                        <p>Explore logs, artifacts, and workflow definitions powering this dashboard.</p>
                     </div>
-                    <p class="footer-text">
-                        Built with PyTorch &mdash; Automated with GitHub Actions<br>
-                        <span class="last-update">Last updated: <span id="lastUpdate">Loading...</span></span>
-                    </p>
                 </div>
+                <div class="resource-links">
+                    <a class="resource-card" href="https://github.com/raselmandol/git-ml" target="_blank" rel="noopener">
+                        <span class="resource-title">Source Code</span>
+                        <span class="resource-meta">github.com/raselmandol/git-ml</span>
+                    </a>
+                    <a class="resource-card" href="https://github.com/raselmandol/git-ml/blob/main/train_output.md" target="_blank" rel="noopener">
+                        <span class="resource-title">Training Log</span>
+                        <span class="resource-meta">train_output.md</span>
+                    </a>
+                    <a class="resource-card" href="https://github.com/raselmandol/git-ml/blob/main/test_output.md" target="_blank" rel="noopener">
+                        <span class="resource-title">Test Report</span>
+                        <span class="resource-meta">test_output.md</span>
+                    </a>
+                    <a class="resource-card" href="https://github.com/raselmandol/git-ml/actions" target="_blank" rel="noopener">
+                        <span class="resource-title">GitHub Actions</span>
+                        <span class="resource-meta">Workflow history</span>
+                    </a>
+                </div>
+            </section>
+
+            <footer class="footer">
+                <p>Built with ❤️ using PyTorch · Automated via GitHub Actions · Deployed on GitHub Pages</p>
             </footer>
         </main>
     </div>
